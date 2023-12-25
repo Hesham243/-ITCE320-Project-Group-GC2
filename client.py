@@ -4,7 +4,7 @@ import socket
 CS = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 CS.connect(("127.0.0.1", 49999))
 CName = input("Enter client's username here: ")
-CS.sendall(CName.encode('utf-8'))
+CS.sendall(CName.encode('ascii'))
 
 
 while True:
@@ -19,34 +19,35 @@ while True:
         print()
 
          
-        if   option == 1:
-            CS.sendall(option.encode('utf-8'))
-            
+        if   option == '1':
+            CS.sendall(option.encode('ascii'))
             data = CS.recv(8192) 
-            print(data.decode('utf-8'))
+            print(data.decode('ascii'))
 
-        elif option == 2:
-            CS.sendall(option.encode('utf-8'))
+        elif option == '2':
+            CS.sendall(option.encode('ascii'))
             data = CS.recv(16384) 
-            print(data.decode('utf-8'))
+            print(data.decode('ascii'))
 
-        elif option == 3:
-            CS.sendall(option.encode('utf-8'))
+        elif option == '3':
+            CS.sendall(option.encode('ascii'))
             city_iata = input("Enter the city (IATA) here: ")
-            CS.sendall(city_iata.encode('utf-8'))          
+            CS.sendall(city_iata.encode('ascii'))          
             data = CS.recv(8192) 
-            print(data.decode('utf-8'))
+            print(data.decode('ascii'))
 
-        elif option == 4:
-            CS.sendall(option.encode('utf-8'))
+        elif option == '4':
+            CS.sendall(option.encode('ascii'))
             flight_iata = input("Enter the flight (IATA) here: ")
-            CS.sendall(flight_iata.encode('utf-8'))
+            CS.sendall(flight_iata.encode('ascii'))
             data = CS.recv(8192) 
-            print(data.decode('utf-8'))
+            print(data.decode('ascii'))
         
-        elif option == 5:
-            CS.sendall(option.encode)
-            print("You quit. Thanks for your participating.")
+        elif option == '5':
+            CS.sendall(option.encode('ascii'))
+            data = CS.recv(8192)
+            print(data.decode('ascii'))
+            print()
             CS.close()
             break
 

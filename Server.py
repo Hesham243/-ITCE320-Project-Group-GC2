@@ -1,53 +1,71 @@
-from ast import Num
-from optparse import Option
-from os import remove
 import socket
 import threading
 #import requests
 #import json
 
-thread=[]
-name=[]
 
-def Online():
-    name = ss.recv(1024).decode('utf-8')
-    name.append(name)
-    print(name,' is Online')
+def start_connection(sock_a):
+    name = sock_a.recv(1024).decode('ascii')
+    names.append(name)
+    print("The Client <",name,"> connect to the Server successfull!")
     
     while True:
         try:
-            Option = ss.recv(1024).decode('utf-8')
-            if Option == 1:
-                SS.sendall('one')
-            elif Option == 2:
-                SS.sendall('two')
-            elif Option == 3:
-                SS.sendall('three')
-            elif Option == 4:
-                SS.sendall('four')
-            elif Option == 5:
-                SS.sendall('five')
+            Option = sock_a.recv(1024).decode('ascii')
+            
+
+            if Option == '1':
+                msg ="one"
+                sock_a.sendall(msg.encode('ascii'))
+                print(name, ' >>>> Selected Option', Option)
+
+
+            elif Option == '2':
+                msg ="two"
+                sock_a.sendall(msg.encode('ascii'))
+                print(name, ' >>>> Selected Option', Option)
+
+
+            elif Option == '3':
+                msg ="three"
+                sock_a.sendall(msg.encode('ascii'))
+                print(name, ' >>>> Selected Option', Option)
+            
+
+            elif Option == '4':
+                msg ="four"
+                sock_a.sendall(msg.encode('ascii'))
+                print(name, ' >>>> Selected Option', Option)
+
+
+            elif Option == '5':
+                msg ="You quit. Thanks for your participating."
+                sock_a.sendall(msg.encode('ascii'))
+                print(name, ' >>>> Selected Option', Option)
+                break
                 
         except:
-            print(name,' is Offline')
+            print("The Client '", name, "' Disconnected from the Server ! ")
             name.remove
             break
     
 
 
-SS = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-SS.bind (('127.0.0.1',49999))
-SS.listen(3)
+ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ss.bind (('127.0.0.1',49999))
+ss.listen(3)
 print ('<<<<<<<<<  server is online  >>>>>>>>')
 
 
+threads=[]
+names=[]
 while True:
-    ScAdd, ScName = SS.accept()
-    ST = threading.Thread( target=Online, args=(ScAdd,len(thread)+1) )
-    thread.append(ST)
-    ST.start()
-    if len(thread)>10:
-        break
+    sock_a, sockName = ss.accept()
+    t = threading.Thread( target=start_connection, args=(sock_a,) )
+    threads.append(t)
+    t.start()
+    # if len(threads)>5:
+    #     break
 
 
 ss.close()
