@@ -61,6 +61,7 @@ def start_connection(sock_a, api_data):
                 msg ="You quit. Thanks for your participating."
                 sock_a.sendall(msg.encode('ascii'))
                 print(name, ' >>>> Selected Option is [',Option,']\n')
+                print("The Client [", name,"] Disconnected from the Server ! \n")
                 break
                 
         except:
