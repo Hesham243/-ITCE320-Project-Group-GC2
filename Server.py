@@ -4,10 +4,10 @@ import requests
 import json
 
 
-def api_response(arr_icao):
+def api_response(ICAO):
     params = {
                 'access_key': '0e5eb992a53abb61b4ec5423713fc090',
-                'arr_icao': arr_icao,
+                'arr_icao': ICAO,
                 'limit': 100
             }
     
@@ -21,45 +21,56 @@ def api_response(arr_icao):
     api_data = json.load(open('Group2.json'))
     return api_data
 
-
-
-def start_connection(sock_a, api_data):
-    name = sock_a.recv(1024).decode('ascii')
+def start_connection(ScAdd, api_data):
+    name = ScAdd.recv(1024).decode('utf-8')
     names.append(name)
     print("The Client [",name,"] connect to the Server successfully!!\n")
     
     while True:
         try:
-            Option = sock_a.recv(1024).decode('ascii')
+            Option = ScAdd.recv(1024).decode('utf-8')
+            Data_Api= json.load(open('Group2.json'))
+
+            if Option == 1:
+                ####### start All_Arrived_Flights
+                for Arrived in Data_Api['data']:
+                    if Arrived ['flight_status'] == 'landed':
+                        Data_user +=str([' Dlight IATA: ',Arrived['flight']["iata"],', Departure Airport: ',Arrived['departure']['airport'],
+                        ', Arrival Time: ',Arrived['arrival']['estimated'],', Arrival Terminal Number: ',Arrived['flight']['number'],
+                        ', Terminal: ',Arrived['arrival']['terminal'],', Gate: ',Arrived['arrival']['gate']
+                        ])
+                ScAdd.sendall(Data_user.encode('utf-8'))
+                print(name, ' >>>> Selected Option is [',Option,']')
+
+
+            elif Option == 2:
+                ####### start All_Delayed_Flights
+                for Arrived in Data_Api['data']:
+                    if Arrived ['flight_status'] == 'scheduled':
+                        Data_user +=str(['flight IATA: ',Arrived['flight']["iata"],', Departure Airport: ',Arrived['departure']['airport'],
+                        ', Original Departure Time: ',Arrived['departure']['timezone'],', Estimated Time of Arrival: ',Arrived['arrival']['estimated'],
+                        ', Arrival Terminal: ',Arrived['arrival']['terminal'],', Delay: ',Arrived['arrival']['delay'],
+                        ', Arrival Gate: ',Arrived['arrival']['gate']
+                        ])
+                ScAdd.sendall(Data_user.encode('utf-8'))
+                print(name, ' >>>> Selected Option is [',Option,']')
+
+
+            elif Option == 3:
+                Data_user ="three"
+                ScAdd.sendall(Data_user.encode('utf-8'))
+                print(name, ' >>>> Selected Option is [',Option,']')
             
 
-            if Option == '1':
-                msg ="one"
-                sock_a.sendall(msg.encode('ascii'))
+            elif Option == 4:
+                Data_user ="four"
+                ScAdd.sendall(Data_user.encode('utf-8'))
                 print(name, ' >>>> Selected Option is [',Option,']')
 
 
-            elif Option == '2':
-                msg ="two"
-                sock_a.sendall(msg.encode('ascii'))
-                print(name, ' >>>> Selected Option is [',Option,']')
-
-
-            elif Option == '3':
-                msg ="three"
-                sock_a.sendall(msg.encode('ascii'))
-                print(name, ' >>>> Selected Option is [',Option,']')
-            
-
-            elif Option == '4':
-                msg ="four"
-                sock_a.sendall(msg.encode('ascii'))
-                print(name, ' >>>> Selected Option is [',Option,']')
-
-
-            elif Option == '5':
-                msg ="You quit. Thanks for your participating."
-                sock_a.sendall(msg.encode('ascii'))
+            elif Option == 5:
+                Data_user ="You quit. Thanks for your participating."
+                ScAdd.sendall(Data_user.encode('utf-8'))
                 print(name, ' >>>> Selected Option is [',Option,']\n')
                 print("The Client [", name,"] Disconnected from the Server ! \n")
                 break
@@ -70,13 +81,10 @@ def start_connection(sock_a, api_data):
             break
     
 
-
 ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-ss.bind (('127.0.0.1',49999))
+ss.bind (('127.0.0.1',49998))
 ss.listen(3)
 print ('<<<<<<<<<  ----[Server is Online]----  >>>>>>>>\n')
-
-
 
 
 threads=[]
@@ -87,21 +95,21 @@ def valid_input(input_str):
         return True
     else:
         return False
+   
 while True:
-    arr_icao = input("Enter the airport code (ICAO): \n")
-    if valid_input(arr_icao): # check the validity of the airport code
+    ICAO = input("Enter the airport code (ICAO): \n")
+    if valid_input(ICAO): # check the validity of the airport code
         break
 
-print("Chosen airport code (icao) is [",arr_icao,"]\n")
+print("Chosen airport code (icao) is [",ICAO,"]\n")
 
-api_data = api_response(arr_icao)
-
+api_data = api_response(ICAO)
 
 while True:
-    sock_a, sockName = ss.accept()
-    t = threading.Thread( target=start_connection, args=(sock_a, api_data) )
-    threads.append(t)
-    t.start()
+    ScAdd, ScName = ss.accept()
+    ST = threading.Thread( target=start_connection, args=(ScAdd, api_data) )
+    threads.append(ST)
+    ST.start()
     # if len(threads)>5:
     #     break
 
