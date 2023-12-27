@@ -4,7 +4,18 @@ import socket
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clientSocket.connect(('127.0.0.1', 49999))
 clientName = input("Enter client's username here: ")
-clientSocket.sendall(clientName.encode('ascii'))
+clientSocket.sendall(clientName.encode('utf-8'))
+
+
+def recv_all(clientSocket):
+    data_user = b''
+    while True:
+        data = clientSocket.recv(4096)
+        data_user += data
+        print(data.decode('utf-8'))
+        if data.endswith(b'\x00'):
+            break
+    return data_user
 
 
 while True:
@@ -18,35 +29,30 @@ while True:
         option = input("\nEnter a option number [1-5]: \n")
         print()
 
-         
+        clientSocket.sendall(option.encode('utf-8'))
         if   option == '1':
-            clientSocket.sendall(option.encode('ascii'))
-            data = clientSocket.recv(8192) 
-            print(data.decode('ascii'))
+            data = recv_all(clientSocket)
+            print(data.decode('utf-8'))
 
         elif option == '2':
-            clientSocket.sendall(option.encode('ascii'))
-            data = clientSocket.recv(16384) 
-            print(data.decode('ascii'))
+            data = recv_all(clientSocket) 
+            print(data.decode('utf-8'))
 
         elif option == '3':
-            clientSocket.sendall(option.encode('ascii'))
             city_iata = input("Enter the city (IATA) here: ")
-            clientSocket.sendall(city_iata.encode('ascii'))          
-            data = clientSocket.recv(8192) 
-            print(data.decode('ascii'))
+            clientSocket.sendall(city_iata.encode('utf-8'))          
+            data = recv_all(clientSocket) 
+            print(data.decode('utf-8'))
 
         elif option == '4':
-            clientSocket.sendall(option.encode('ascii'))
             flight_iata = input("Enter the flight (IATA) here: ")
-            clientSocket.sendall(flight_iata.encode('ascii'))
-            data = clientSocket.recv(8192) 
-            print(data.decode('ascii'))
+            clientSocket.sendall(flight_iata.encode('utf-8'))
+            data = recv_all(clientSocket) 
+            print(data.decode('utf-8'))
         
         elif option == '5':
-            clientSocket.sendall(option.encode('ascii'))
             data = clientSocket.recv(8192)
-            print(data.decode('ascii'))
+            print(data.decode('utf-8'))
             print()
             clientSocket.close()
             break
