@@ -21,14 +21,14 @@ def api_response(ICAO):
     api_data = json.load(open('Group2.json'))
     return api_data
 
-def start_connection(ScAdd, api_data):
-    name = ScAdd.recv(1024).decode('utf-8')
-    names.append(name)
-    print("The Client [",name,"] connect to the Server successfully!!\n")
+def start_connection(socketActive, api_data):
+    clientName = socketActive.recv(1024).decode('utf-8')
+    names.append(clientName)
+    print("The Client [",clientName,"] connect to the Server successfully!!\n")
     
     while True:
         try:
-            Option = ScAdd.recv(1024).decode('utf-8')
+            Option = socketActive.recv(1024).decode('utf-8')
             Data_Api= json.load(open('Group2.json'))
 
             if Option == 1:
@@ -39,8 +39,8 @@ def start_connection(ScAdd, api_data):
                         ', Arrival Time: ',Arrived['arrival']['estimated'],', Arrival Terminal Number: ',Arrived['flight']['number'],
                         ', Terminal: ',Arrived['arrival']['terminal'],', Gate: ',Arrived['arrival']['gate']
                         ])
-                ScAdd.sendall(Data_user.encode('utf-8'))
-                print(name, ' >>>> Selected Option is [',Option,']')
+                socketActive.sendall(Data_user.encode('utf-8'))
+                print(clientName, ' >>>> Selected Option is [',Option,']')
 
 
             elif Option == 2:
@@ -52,38 +52,38 @@ def start_connection(ScAdd, api_data):
                         ', Arrival Terminal: ',Arrived['arrival']['terminal'],', Delay: ',Arrived['arrival']['delay'],
                         ', Arrival Gate: ',Arrived['arrival']['gate']
                         ])
-                ScAdd.sendall(Data_user.encode('utf-8'))
-                print(name, ' >>>> Selected Option is [',Option,']')
+                socketActive.sendall(Data_user.encode('utf-8'))
+                print(clientName, ' >>>> Selected Option is [',Option,']')
 
 
             elif Option == 3:
                 Data_user ="three"
-                ScAdd.sendall(Data_user.encode('utf-8'))
-                print(name, ' >>>> Selected Option is [',Option,']')
+                socketActive.sendall(Data_user.encode('utf-8'))
+                print(clientName, ' >>>> Selected Option is [',Option,']')
             
 
             elif Option == 4:
                 Data_user ="four"
-                ScAdd.sendall(Data_user.encode('utf-8'))
-                print(name, ' >>>> Selected Option is [',Option,']')
+                socketActive.sendall(Data_user.encode('utf-8'))
+                print(clientName, ' >>>> Selected Option is [',Option,']')
 
 
             elif Option == 5:
                 Data_user ="You quit. Thanks for your participating."
-                ScAdd.sendall(Data_user.encode('utf-8'))
-                print(name, ' >>>> Selected Option is [',Option,']\n')
-                print("The Client [", name,"] Disconnected from the Server ! \n")
+                clientName.sendall(Data_user.encode('utf-8'))
+                print(clientName, ' >>>> Selected Option is [',Option,']\n')
+                print("The Client [",clientName,"] Disconnected from the Server ! \n")
                 break
                 
         except:
-            print("The Client [", name,"] Disconnected from the Server ! \n")
-            name.remove
+            print("The Client [",clientName,"] Disconnected from the Server ! \n")
+            clientName.remove
             break
     
 
-ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-ss.bind (('127.0.0.1',49998))
-ss.listen(3)
+serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+serverSocket.bind (('127.0.0.1', 49999))
+serverSocket.listen(3)
 print ('<<<<<<<<<  ----[Server is Online]----  >>>>>>>>\n')
 
 
@@ -106,12 +106,12 @@ print("Chosen airport code (icao) is [",ICAO,"]\n")
 api_data = api_response(ICAO)
 
 while True:
-    ScAdd, ScName = ss.accept()
-    ST = threading.Thread( target=start_connection, args=(ScAdd, api_data) )
-    threads.append(ST)
-    ST.start()
+    socketActive, socketName = serverSocket.accept()
+    st = threading.Thread( target=start_connection, args=(socketActive, api_data) )
+    threads.append(st)
+    st.start()
     # if len(threads)>5:
     #     break
 
 
-sock_a.close()
+socketActive.close()

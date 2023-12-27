@@ -1,10 +1,10 @@
 import socket
 
 
-CS = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-CS.connect(("127.0.0.1", 49999))
-CName = input("Enter client's username here: ")
-CS.sendall(CName.encode('ascii'))
+clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+clientSocket.connect(('127.0.0.1', 49999))
+clientName = input("Enter client's username here: ")
+clientSocket.sendall(clientName.encode('ascii'))
 
 
 while True:
@@ -20,35 +20,35 @@ while True:
 
          
         if   option == '1':
-            CS.sendall(option.encode('ascii'))
-            data = CS.recv(8192) 
+            clientSocket.sendall(option.encode('ascii'))
+            data = clientSocket.recv(8192) 
             print(data.decode('ascii'))
 
         elif option == '2':
-            CS.sendall(option.encode('ascii'))
-            data = CS.recv(16384) 
+            clientSocket.sendall(option.encode('ascii'))
+            data = clientSocket.recv(16384) 
             print(data.decode('ascii'))
 
         elif option == '3':
-            CS.sendall(option.encode('ascii'))
+            clientSocket.sendall(option.encode('ascii'))
             city_iata = input("Enter the city (IATA) here: ")
-            CS.sendall(city_iata.encode('ascii'))          
-            data = CS.recv(8192) 
+            clientSocket.sendall(city_iata.encode('ascii'))          
+            data = clientSocket.recv(8192) 
             print(data.decode('ascii'))
 
         elif option == '4':
-            CS.sendall(option.encode('ascii'))
+            clientSocket.sendall(option.encode('ascii'))
             flight_iata = input("Enter the flight (IATA) here: ")
-            CS.sendall(flight_iata.encode('ascii'))
-            data = CS.recv(8192) 
+            clientSocket.sendall(flight_iata.encode('ascii'))
+            data = clientSocket.recv(8192) 
             print(data.decode('ascii'))
         
         elif option == '5':
-            CS.sendall(option.encode('ascii'))
-            data = CS.recv(8192)
+            clientSocket.sendall(option.encode('ascii'))
+            data = clientSocket.recv(8192)
             print(data.decode('ascii'))
             print()
-            CS.close()
+            clientSocket.close()
             break
 
         else:
