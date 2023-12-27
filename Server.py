@@ -78,8 +78,9 @@ def start_connection(socketActive, api_data):
         except:
             print("The Client [",clientName,"] Disconnected from the Server ! \n")
             clientName.remove
+            socketActive.close()
             break
-    
+
 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.bind (('127.0.0.1', 49999))
