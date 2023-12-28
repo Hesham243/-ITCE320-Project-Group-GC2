@@ -24,7 +24,7 @@ def api_response(ICAO):
 def start_connection(socketActive, api_data):
     clientName = socketActive.recv(1024).decode('utf-8')
     names.append(clientName)
-    print("The Client [",clientName,"] connect to the Server successfully!!\n")
+    print("The Client [",clientName,"] connected to the Server successfully.\n")
     
     while True:
         try:
@@ -62,6 +62,11 @@ def start_connection(socketActive, api_data):
                 ###### start All_Flights_Coming_From_A_Specific_City
                 Data_user = ''
                 IATA = socketActive.recv(8192).decode('utf-8')
+                if len(IATA) < 3:
+                    print(f"\nInvalid IATA code received from {clientName}. Disconnecting.")
+                    socketActive.close()
+                    break
+
                 for Flight in Data_Api['data']:
                     if Flight['departure']['iata'] == IATA:
                         Data_user +=str(['Flight IATA Code: ',Flight['flight']['iata'], ',Departure Airport: ', Flight['departure']['airport'],
@@ -77,9 +82,15 @@ def start_connection(socketActive, api_data):
             elif Option == '4':
                 ###### start Details_Of_A_Particular_Flight:
                 Data_user = ''
-                city_iata = socketActive.recv(8192).decode('utf-8')
+                flight_iata = socketActive.recv(8192).decode('utf-8')
+                
+                if len(flight_iata) < 3:
+                    print(f"\nInvalid flight IATA code received from {clientName}. Disconnecting.")
+                    socketActive.close()
+                    break
+
                 for Flight in Data_Api['data']:
-                    if Flight['flight']['number'] == city_iata:
+                    if Flight['flight']['iata'] == flight_iata:
                         Data_user +=str(['Flight IATA Code: ',Flight['flight']['iata'], ', Departure Airport: ',Flight['departure']['airport'],
                                          ', Departure Gate: ',Flight['departure']['gate'], ', Departure Terminal: ',Flight['departure']['terminal'],
                                          ', Arrival Airport: ',Flight['arrival']['airport'], ', Arrival Gate: ',Flight['arrival']['gate'],
@@ -94,12 +105,12 @@ def start_connection(socketActive, api_data):
                 Data_user ="You quit. Thanks for your participating."
                 socketActive.sendall(Data_user.encode('utf-8'))
                 print(clientName, ' >>>> Selected Option is [',Option,']\n')
-                print("The Client [",clientName,"] Disconnected from the Server ! \n")
+                print("\nThe Client [",clientName,"] Disconnected from the Server !")
                 break
                 
         except Exception as e:
             print(f"Error processing client request: {e}")
-            print("The Client [", clientName, "] Disconnected from the Server ! \n")
+            print("\nThe Client [", clientName, "] Disconnected from the Server !!!")
             names.remove(clientName)
             socketActive.close()
             break
@@ -108,7 +119,7 @@ def start_connection(socketActive, api_data):
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.bind (('127.0.0.1', 49999))
 serverSocket.listen(3)
-print ('<<<<<<<<<  ----[Server is Online]----  >>>>>>>>\n')
+print ('\n<<<<<<<<<  ----[Server is Online]----  >>>>>>>>')
 
 
 threads=[]
@@ -121,11 +132,11 @@ def valid_input(input_str):
         return False
    
 while True:
-    ICAO = input("Enter the airport code (ICAO): ")
+    ICAO = input("\nEnter the airport code (ICAO): ").upper()
     if valid_input(ICAO): # check the validity of the airport code
         break
 
-print("Chosen airport code (icao) is [",ICAO,"]\n")
+print("\nChosen airport code (icao) is [",ICAO,"]")
 
 api_data = api_response(ICAO)
 

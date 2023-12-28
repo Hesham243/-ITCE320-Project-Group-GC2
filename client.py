@@ -1,12 +1,13 @@
 import socket
 
-
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 try:
     clientSocket.connect(('127.0.0.1', 49999))
 except Exception as e:
     print(f"Error connecting to the server: {e}")
     exit()
+
 clientName = input("Enter client's username here: ")
 clientSocket.sendall(clientName.encode('utf-8'))
 
@@ -20,7 +21,6 @@ def recv_all(clientSocket):
                 raise Exception("Connection closed by the server.")
             data += part
             if len(part) < 4096:
-                # either 0 or end of data
                 break
         except Exception as e:
             print(f"Error receiving data: {e}")
@@ -38,28 +38,53 @@ while True:
         print("5- Quit ")
         option = input("\nEnter a option number [1-5]: \n")
         print()
-
         clientSocket.sendall(option.encode('utf-8'))
+        
+
         if   option == '1':
             data = recv_all(clientSocket)
             print(data.decode('utf-8'))
+
 
         elif option == '2':
             data = recv_all(clientSocket) 
             print(data.decode('utf-8'))
 
+
         elif option == '3':
-            city_iata = input("Enter the city (IATA) here: ")
+            while True:
+                city_iata = input("Enter the city (iata) here: ").upper()
+                if len(city_iata) >= 3: # check the validity of the city iata
+                    break
+                else:
+                    print("Invalid city IATA code. Please enter a valid code.")
             clientSocket.sendall(city_iata.encode('utf-8'))          
             data = recv_all(clientSocket) 
-            print(data.decode('utf-8'))
+            decoded_data = data.decode('utf-8')
+
+            if not decoded_data.strip():
+                print("No data found for the specified city. Please try again.")
+            else:
+                print(decoded_data)
+
 
         elif option == '4':
-            flight_iata = input("Enter the flight (IATA) here: ")
+            while True: 
+                flight_iata = input("Enter the flight (iata) here: ").upper()
+                if len(flight_iata) >= 3: # check the validity of the flight iata
+                    break
+                else:
+                    print("Invalid flight IATA code. Please enter a valid code.")
             clientSocket.sendall(flight_iata.encode('utf-8'))
             data = recv_all(clientSocket) 
-            print(data.decode('utf-8'))
+            decoded_data = data.decode('utf-8')
+
+            if not decoded_data.strip():
+                print("No data found for the specified flight. Please try again.")
+            else:
+                print(decoded_data)
         
+
         elif option == '5':
             data = clientSocket.recv(8192)
             print(data.decode('utf-8'))
