@@ -2,20 +2,30 @@ import socket
 
 
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-clientSocket.connect(('127.0.0.1', 49999))
+try:
+    clientSocket.connect(('127.0.0.1', 49999))
+except Exception as e:
+    print(f"Error connecting to the server: {e}")
+    exit()
 clientName = input("Enter client's username here: ")
 clientSocket.sendall(clientName.encode('utf-8'))
 
 
 def recv_all(clientSocket):
-    data_user = b''
+    data = b''
     while True:
-        data = clientSocket.recv(4096)
-        data_user += data
-        print(data.decode('utf-8'))
-        if data.endswith(b'\x00'):
+        try:
+            part = clientSocket.recv(4096)
+            if not part:
+                raise Exception("Connection closed by the server.")
+            data += part
+            if len(part) < 4096:
+                # either 0 or end of data
+                break
+        except Exception as e:
+            print(f"Error receiving data: {e}")
             break
-    return data_user
+    return data
 
 
 while True:
@@ -61,6 +71,6 @@ while True:
             print("\n Invalid option, Please enter a number from 1 to 5 only: ")
             print()
         
-    except:
-        print("Unexpected error. Please try again.")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
         break

@@ -40,7 +40,7 @@ def start_connection(socketActive, api_data):
                         ', Arrival Time: ',Arrived['arrival']['estimated'],', Arrival Terminal Number: ',Arrived['flight']['number'],
                         ', Terminal: ',Arrived['arrival']['terminal'],', Gate: ',Arrived['arrival']['gate']
                         ])
-                socketActive.sendall((Data_user + '\x00').encode('utf-8'))
+                socketActive.sendall((Data_user).encode('utf-8'))
                 print(clientName, ' >>>> Selected Option is [',Option,']')
 
 
@@ -54,7 +54,7 @@ def start_connection(socketActive, api_data):
                         ', Arrival Terminal: ',Arrived['arrival']['terminal'],', Delay: ',Arrived['arrival']['delay'],
                         ', Arrival Gate: ',Arrived['arrival']['gate']
                         ])
-                socketActive.sendall((Data_user + '\x00').encode('utf-8'))
+                socketActive.sendall((Data_user).encode('utf-8'))
                 print(clientName, ' >>>> Selected Option is [',Option,']')
 
 
@@ -70,7 +70,7 @@ def start_connection(socketActive, api_data):
                                          ', Status: ',Flight['flight_status']
                                          ])
 
-                socketActive.sendall((Data_user + '\x00').encode('utf-8'))
+                socketActive.sendall((Data_user).encode('utf-8'))
                 print(clientName, ' >>>> Selected Option is [',Option,']')
             
 
@@ -86,7 +86,7 @@ def start_connection(socketActive, api_data):
                                          ', Arrival Terminal: ',Flight['arrival']['terminal'], ', Status: ',Flight['flight_status'],
                                          ', Scheduled Departure Time: ',Flight['departure']['scheduled'], ', Scheduled Arrival Time: ',Flight['arrival']['scheduled']
                                          ])
-                socketActive.sendall((Data_user + '\x00').encode('utf-8'))
+                socketActive.sendall((Data_user).encode('utf-8'))
                 print(clientName, ' >>>> Selected Option is [',Option,']')
 
 
@@ -97,9 +97,10 @@ def start_connection(socketActive, api_data):
                 print("The Client [",clientName,"] Disconnected from the Server ! \n")
                 break
                 
-        except:
-            print("The Client [",clientName,"] Disconnected from the Server ! \n")
-            clientName.remove
+        except Exception as e:
+            print(f"Error processing client request: {e}")
+            print("The Client [", clientName, "] Disconnected from the Server ! \n")
+            names.remove(clientName)
             socketActive.close()
             break
 
