@@ -166,7 +166,7 @@ class Server:
             st = threading.Thread(target=self.start_connection, args=(socket_active, api_data))
             self.threads.append(st)
             st.start()
-            if len(self.threads) > 5:
+            if len(self.threads) > 3:
                 break
 
         socket_active.close()

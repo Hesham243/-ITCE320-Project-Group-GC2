@@ -12,7 +12,7 @@ class Client:
         try:
             self.clientSocket.connect((self.host, self.port))
         except Exception as e:
-            print(f"\n>>>>> Error connecting to the server: {e}")
+            print(f"\n>>>>> Error connecting to the server: {e}\n")
             exit()
 
 
