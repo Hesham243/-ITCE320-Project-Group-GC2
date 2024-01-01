@@ -40,6 +40,7 @@ class Server:
 
 
     def start_connection(self, socket_active, api_data):
+
         client_name = socket_active.recv(1024).decode('utf-8')
         self.names.append(client_name)
         print("\nThe Client [", client_name, "] Connected To The Server Successfully.\n")
@@ -54,11 +55,11 @@ class Server:
                     for arrived in data_api['data']:
                         if arrived['flight_status'] == 'landed':
                             data_user.append([arrived["flight"]["iata"],
-                                             arrived["departure"]["airport"],
-                                             arrived["arrival"]["estimated"],
-                                             arrived["flight"]["number"],
-                                             arrived["arrival"]["terminal"],
-                                             arrived["arrival"]["gate"]])
+                                            arrived["departure"]["airport"],
+                                            arrived["arrival"]["estimated"],
+                                            arrived["flight"]["number"],
+                                            arrived["arrival"]["terminal"],
+                                            arrived["arrival"]["gate"]])
                     
                     headers = ['Flight IATA', 'Departure Airport', 'Arrival Time', 'Arrival Terminal Number', 'Terminal', 'Gate']
                     self.display_table(socket_active, headers, data_user)
@@ -70,12 +71,12 @@ class Server:
                     for arrived in data_api['data']:
                         if arrived['flight_status'] == 'scheduled':
                             data_user.append([arrived["flight"]["iata"],
-                                              arrived["departure"]["airport"],
-                                              arrived["departure"]["timezone"],
-                                              arrived["arrival"]["estimated"],
-                                              arrived["arrival"]["terminal"],
-                                              arrived["arrival"]["delay"],
-                                              arrived["arrival"]["gate"]])
+                                            arrived["departure"]["airport"],
+                                            arrived["departure"]["timezone"],
+                                            arrived["arrival"]["estimated"],
+                                            arrived["arrival"]["terminal"],
+                                            arrived["arrival"]["delay"],
+                                            arrived["arrival"]["gate"]])
                     
                     headers = ['Flight IATA', 'Departure Airport', 'Original Departure Time', 'Estimated Arrival Time', 'Arrival Terminal', 'Delay', 'Arrival Gate']
                     self.display_table(socket_active, headers, data_user)
@@ -93,12 +94,12 @@ class Server:
                     for flight in data_api['data']:
                         if flight['departure']['iata'] == iata:
                             data_user.append([flight["flight"]["iata"],
-                                             flight["departure"]["airport"],
-                                             flight["departure"]["timezone"],
-                                             flight["arrival"]["estimated"],
-                                             flight["departure"]["gate"],
-                                             flight["arrival"]["gate"],
-                                             flight["flight_status"]])
+                                            flight["departure"]["airport"],
+                                            flight["departure"]["timezone"],
+                                            flight["arrival"]["estimated"],
+                                            flight["departure"]["gate"],
+                                            flight["arrival"]["gate"],
+                                            flight["flight_status"]])
                     
                     headers = ['Flight IATA Code', 'Departure Airport', 'Original Departure Time', 'Estimated Arrival Time', 'Departure Gate', 'Arrival Gate', 'Status']
                     self.display_table(socket_active, headers, data_user)
@@ -116,15 +117,15 @@ class Server:
                     for flight in data_api['data']:
                         if flight['flight']['iata'] == flight_iata:
                             data_user.append([flight["flight"]["iata"],
-                                              flight["departure"]["airport"],
-                                              flight["departure"]["gate"],
-                                              flight["departure"]["terminal"],
-                                              flight["arrival"]["airport"], 
-                                              flight["arrival"]["gate"], 
-                                              flight["arrival"]["terminal"],
-                                              flight["flight_status"],
-                                              flight["departure"]["scheduled"],
-                                              flight["arrival"]["scheduled"]])
+                                            flight["departure"]["airport"],
+                                            flight["departure"]["gate"],
+                                            flight["departure"]["terminal"],
+                                            flight["arrival"]["airport"], 
+                                            flight["arrival"]["gate"], 
+                                            flight["arrival"]["terminal"],
+                                            flight["flight_status"],
+                                            flight["departure"]["scheduled"],
+                                            flight["arrival"]["scheduled"]])
                     
                     headers = [ 'Flight IATA Code', 'Departure Airport', 'Departure Gate', 'Departure Terminal', 'Arrival Airport', 'Arrival Gate', 'Arrival Terminal', 'Status', 'Scheduled Departure Time', 'Scheduled Arrival Time']
                     self.display_table(socket_active, headers, data_user)
@@ -147,6 +148,7 @@ class Server:
                 break
 
 
+
     def valid_input(self, input_str):
         return len(input_str) >= 3
 
@@ -166,7 +168,7 @@ class Server:
             st = threading.Thread(target=self.start_connection, args=(socket_active, api_data))
             self.threads.append(st)
             st.start()
-            if len(self.threads) > 3:
+            if len(self.threads) > 5:
                 break
 
         socket_active.close()

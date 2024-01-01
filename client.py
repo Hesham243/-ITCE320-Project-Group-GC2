@@ -17,8 +17,12 @@ class Client:
 
 
     def send_username(self):
-        client_name = input("\nEnter client's username here: ")
-        self.clientSocket.sendall(client_name.encode('utf-8'))
+        try:
+            client_name = input("\nEnter client's username here: ")
+            self.clientSocket.sendall(client_name.encode('utf-8'))
+        except ConnectionResetError:
+            print("\n>>>>> Connection to the server was forcibly closed. Exiting...")
+            exit()
 
 
     def recv_all(self):
@@ -38,90 +42,96 @@ class Client:
     
 
     def menu(self):
-        while True:
-            try:
-                print("1- Display All arrived flights")
-                print("2- Display All delayed flights")
-                print("3- Display All flights from a specific city")
-                print("4- Display Details of a particular flight")
-                print("5- Quit ")
-                option = input("\nEnter a Option Number [1-5]: \n")
-                print()
-                self.clientSocket.sendall(option.encode('utf-8'))
+        try:
+            while True:
+                try:
+                    print("1- Display All arrived flights")
+                    print("2- Display All delayed flights")
+                    print("3- Display All flights from a specific city")
+                    print("4- Display Details of a particular flight")
+                    print("5- Quit ")
+                    option = input("\nEnter a Option Number [1-5]: \n")
+                    print()
+                    self.clientSocket.sendall(option.encode('utf-8'))
 
-                if option == '1':
-                    data = self.recv_all()
-                    try:
-                        print(data.decode('utf-8'))
-                    except Exception as e:
-                        print(f"\n>>>>> Error displaying table: {e}\n")
-                
-
-                elif option == '2':
-                    data = self.recv_all()
-                    try:
-                        print(data.decode('utf-8'))
-                    except Exception as e:
-                        print(f"\n>>>>> Error displaying table: {e}\n")
-
-
-                elif option == '3':
-                    while True:
-                        user_input = input("\nEnter the city (iata) here: ").upper()
-                        print()
-                        if len(user_input) >= 3:  # check the validity of the input
-                            break
-                        else:
-                            print("\n>>>>> Invalid city iata entered. Please enter a valid code.")
-                    self.clientSocket.sendall(user_input.encode('utf-8'))
-                    data = self.recv_all()
-                    decoded_data = data.decode('utf-8')
-
-                    try:
-                        if not decoded_data.strip():
-                            print("\n>>>> No data found. Please try again.\n")
-                        else:
-                            print(decoded_data)
-                    except Exception as e:
-                        print(f"\n>>>>> Error displaying table: {e}\n")
-                
-
-                elif option == '4':
-                    while True:
-                        user_input = input("\nEnter the flight (iata) here: ").upper()
-                        print()
-                        if len(user_input) >= 3:  # check the validity of the input
-                            break
-                        else:
-                            print("\n>>>>> Invalid flight iata entered. Please enter a valid code.")
+                    if option == '1':
+                        data = self.recv_all()
+                        try:
+                            print(data.decode('utf-8'))
+                        except Exception as e:
+                            print(f"\n>>>>> Error displaying table: {e}\n")
                     
-                    self.clientSocket.sendall(user_input.encode('utf-8'))
-                    data = self.recv_all()
-                    decoded_data = data.decode('utf-8')
 
-                    try:
-                        if not decoded_data.strip():
-                            print("\n>>>>> No data found. Please try again.\n")
-                        else:
-                            print(decoded_data)
-                    except Exception as e:
-                        print(f"\n>>>>> Error displaying table: {e}\n")
-                
+                    elif option == '2':
+                        data = self.recv_all()
+                        try:
+                            print(data.decode('utf-8'))
+                        except Exception as e:
+                            print(f"\n>>>>> Error displaying table: {e}\n")
 
-                elif option == '5':
-                    data = self.clientSocket.recv(8192)
-                    print(data.decode('utf-8'))
-                    print()
-                    self.clientSocket.close()
+
+                    elif option == '3':
+                        while True:
+                            user_input = input("\nEnter the city (iata) here: ").upper()
+                            print()
+                            if len(user_input) >= 3:  # check the validity of the input
+                                break
+                            else:
+                                print("\n>>>>> Invalid city iata entered. Please enter a valid code.")
+                        self.clientSocket.sendall(user_input.encode('utf-8'))
+                        data = self.recv_all()
+                        decoded_data = data.decode('utf-8')
+
+                        try:
+                            if not decoded_data.strip():
+                                print("\n>>>> No data found. Please try again.\n")
+                            else:
+                                print(decoded_data)
+                        except Exception as e:
+                            print(f"\n>>>>> Error displaying table: {e}\n")
+                    
+
+                    elif option == '4':
+                        while True:
+                            user_input = input("\nEnter the flight (iata) here: ").upper()
+                            print()
+                            if len(user_input) >= 3:  # check the validity of the input
+                                break
+                            else:
+                                print("\n>>>>> Invalid flight iata entered. Please enter a valid code.")
+                        
+                        self.clientSocket.sendall(user_input.encode('utf-8'))
+                        data = self.recv_all()
+                        decoded_data = data.decode('utf-8')
+
+                        try:
+                            if not decoded_data.strip():
+                                print("\n>>>>> No data found. Please try again.\n")
+                            else:
+                                print(decoded_data)
+                        except Exception as e:
+                            print(f"\n>>>>> Error displaying table: {e}\n")
+                    
+
+                    elif option == '5':
+                        data = self.clientSocket.recv(8192)
+                        print(data.decode('utf-8'))
+                        print()
+                        self.clientSocket.close()
+                        break
+
+                    else:
+                        print("\n>>>>> Invalid option entered, Please enter a option from 1 to 5 only: ")
+                        print()
+
+                except Exception as e:
+                    print(f"\n>>>>> Unexpected error: {e}\n")
                     break
-
-                else:
-                    print("\n>>>>> Invalid option entered, Please enter a option from 1 to 5 only: ")
-                    print()
-
-            except Exception as e:
-                print(f"\n>>>>> Unexpected error: {e}\n")
-                break
+                
+        except KeyboardInterrupt:
+            print("\n>>>>> User interrupted the operation. Exiting...")
+            self.clientSocket.close()
+            exit()
 
 
 if __name__ == "__main__":
